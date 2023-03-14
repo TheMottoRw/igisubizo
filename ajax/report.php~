@@ -1,0 +1,17 @@
+<?php
+include"../includes/conn.php";
+include"../php/main.php";
+if(isset($_GET['cate'])){
+	switch($_GET['cate']){
+		case 'dashboard':
+		echo fillDashboard();
+		break;
+		case 'report':
+		header("Content-type:application/json");
+		 $data=getLostsByRange(null,array("start"=>$_GET['start'],"end"=>$_GET['end']),$_GET['type'],$_GET['status'],$_GET['postoffid']);
+		echo $data;
+		break;
+		default:	echo "Invalid Request";
+}	
+}
+?>

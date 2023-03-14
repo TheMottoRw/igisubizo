@@ -1,0 +1,17 @@
+<?php
+include"../includes/conn.php";
+include"../php/main.php";
+#============USER====================
+switch($_GET['cate']) {
+	case 'changepwd':
+	$feed=changePwd(array("old"=>$_GET['old'],"new"=>$_GET["new"]));
+	break;
+	case 'load':
+	echo getUsers();
+	break;
+	case 'update':
+	echo updateAdminInfo(array("uname"=>$_GET['uname'],"email"=>$_GET['email']));
+	default:
+	echo "Invalid Request";
+}
+?>

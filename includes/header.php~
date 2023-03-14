@@ -1,0 +1,139 @@
+<?php
+include"php/main.php";
+include"includes/conn.php";
+sessionManager();
+?>
+<html>
+<head>
+<title>E-Tracking System</title>
+<meta name="viewport"content="width=device-width, initial-scale=1.0">
+<script src="bootstrap/js/jquery.js"></script>
+<script src="bootstrap/js/bootstrap.js"></script>
+<script src="js/jqdepend.js"></script>
+<script src="js/main.js"></script>
+<link rel="stylesheet"href="bootstrap/css/bootstrap.min.css"type="text/css">
+<link rel="stylesheet"href="css/style.css"type="text/css" media="all">
+  <!-- Custom fonts for this template-->
+  <link href="BSHelper/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link rel="shortcut icon" href="webuse/ETracklogo.png">
+<style type="text/css">
+body{font-family: lucida fax;background-color:;overflow-x:hidden;overflow-y:auto}
+nav{font-family: arial;background-color:whitesmoke;position:fixed;}
+#mnavbar{background-color:	rgb(40,110,195);font-family: lucida fax;width:100%;}
+ h5{font-size:18px;color:black;font-weight:bold;text-align:;}
+h2{color:green;}
+#foot-bar{background-color:rgb(180,220,200);color:darkmagenta;}
+#foot-bar h5{color:blue;margin-left:5%}
+#foot-bar ul li{list-style: disc;}
+
+/*-----------MAPUTO SCRATCH----------*/
+#footer{height:25px;width:100%;background-color:white;color:#4489b4;text-align: center;font-family: georgia;font-weight: bold;
+       letter-spacing: 2px;font-size: 14px;border:1px solid #4489b4;padding-top:3px;padding-bottom:3px;}
+#modfrm:hover{background-color:blue;color:black;font-weight:bold}
+/*bgcolorheader:rgb(100,180,160) #mnavbarbgColor:rgb(100,180,130)*/
+
+</style>
+ 
+<style>
+</style>
+</head>
+<body ng-app="etrackApp" style="background-color:white">
+<div class="container-fluid">
+<div style="background-color:rgb(40,110,195);padding-right:8%">
+	<nav class="navbar navbar-default navbar-fixed" id="mnavbar">
+	<div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbartarg">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+	</button>
+	<a href=""class="navbar-brand"><div id="site-names"style="color:white;font-weight:bold;">
+	<img src="webuse/ETracklogo.png" height="50px" width="35px" class="img img-circle" style="margin-top:-5.5%">
+	&nbsp;<span>IGISUBIZO SYSTEM</span></div></a>
+</div><!--end navbar header-->
+	<div class="collapse navbar-collapse navbar-right" id="navbartarg">
+		<ul class="nav navbar-nav navbar-right">
+		<li><a href="dashboard.php"style="color:white"id="modfrm" class="home"><span class="glyphicon glyphicon-home"></span> Dashboard</a></li>
+		<li><a href="postoffice.php"style="color:white"id="modfrm" class="postoffice"><span class="glyphicon glyphicon-globe"></span> Post Offices</a></li>
+		<!--li><a href="queues.php"style="color:white"id="modfrm" class="queues"><span class="glyphicon glyphicon-th-list"></span> Queues</a></li-->
+		<li><a href="types.php"style="color:white"id="modfrm" class="types"><span class="glyphicon glyphicon-star"></span> Types</a></li>
+		<li><a href="report.php"style="color:white"id="modfrm"  class="report"><span class="glyphicon glyphicon-print"></span>Reports</a></li>
+	 <li><a href="#" class=" btn btn-info dropdown-toggle" data-toggle="dropdown"   style="color:white"><span class="glyphicon glyphicon-cog"></span> Setting</a>
+	  <ul class="dropdown-menu dropdown-menu-left"role="menu">
+                <li><a href="#" class="glyphicon glyphicon-user" data-toggle="modal" data-target="#viewAdminModal" id="adprof"> Profile</a>
+                 <li><a href="representatives.php" class="fa fa-users" class="representer"> Representatives</a>
+                <li><a href="support.php" class="glyphicon glyphicon-indent-right"> Support</a>
+                <li><a href="#"class="glyphicon glyphicon-lock" data-toggle="modal" data-target="#changePasswordModal"> Change Password</a></li>
+                <li class="divider"></li>
+                <li><a href="includes/logout.php"class="glyphicon glyphicon-log-out"> Logout</a></li>
+            </ul>	 
+	 
+	 </li>
+</ul>
+	</div><!--end of collapse navbar-->
+		    <div id="changePasswordModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+      <div class="modal-content">
+        <form ng-submit="" >
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Change Password</h4>
+          </div>
+          <div class="modal-body" >
+            <p style="font-size:13px;"id="changePwdResponse"></p>
+            <span class="col-lg-4">Old Password</span><div class="col-lg-8"><input type="password" class="form-control" id="oldpassword" ><br></div>
+<span id="doesnotmatch" class="col-lg-12" style="text-align:center"></span><br>
+<span class="col-lg-4">New Password</span><div class="col-lg-8"><input type="password" name="nwpassword" class="form-control" id="nwpassword"><br></div>
+<span class="col-lg-4">Confirm Password</span><div class="col-lg-8"><input type="password" name="confpassword" class="form-control" id="confpassword"></div>
+</div>
+       <br><br><br><br><br><br><br>   <div class="modal-footer">
+            <button type="submit" class="btn btn-success" id="changePwd">
+             <span class="glyphicon glyphicon-ok"></span> Save</button><button type="button" class="btn btn-danger" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove"></span>Close</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div><!--end delete Modal-->
+	    <div id="viewAdminModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+      <div class="modal-content">
+        <form ng-submit="" >
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Admin Information</h4>
+          </div>
+          <div class="modal-body" >
+            <p style="font-size:13px;"id="changeAdminResponse"></p>
+           <input type="hidden" id="adid">
+            <div id="changeAdInfo" style="display:none;">
+ <button id="backToView" type="button" class="btn btn-info"><span class="glyphicon glyphicon-arrow-left"></span>Back to View</button>
+ <br><br>           <span class="col-lg-4">Username</span><div class="col-lg-8"><input type="text" class="form-control" id="adUname" ><br></div>
+<span class="col-lg-4">Email</span><div class="col-lg-8"><input type="text" name="adEmail" class="form-control" id="adEmail"><br></div>
+</div>
+ <div id="viewAdInfo">
+ <span class="col-lg-4">Username</span><div class="col-lg-8" id="viewUname"><br></div>
+<span class="col-lg-4">Email</span><div class="col-lg-8" id="viewEmail"></div>
+</div><div class="col-lg-4 col-lg-offset-5 pull-right">
+<br><button type="button" name="btnEditAdInfo" class="btn btn-warning" id="btnEditAdInfo">
+<span class="glyphicon glyphicon-pencil"></span>Edit</button>
+<span class="col-lg-3"></span></div>
+<br><br><br><br><br><br></div>
+  <div class="modal-footer">
+            <button type="submit" name="btnChangeAdInfo" class="btn btn-success" id="btnChangeAdInfo" style="display:none;">
+			<span class="glyphicon glyphicon-ok"></span>
+              Save</button><button type="button" class="btn btn-danger" data-dismiss="modal">
+           <span class="glyphicon glyphicon-remove"></span> Close</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div><!--end delete Modal-->
+  
+  </div><!--end currency conversion Modal-->
+	</div>

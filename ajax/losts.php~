@@ -1,0 +1,42 @@
+<?php
+include"../includes/conn.php";
+include"../php/main.php";
+if(isset($_GET['cate'])){
+	switch($_GET['cate']){
+		case 'register':
+		echo addLosts(array("postoffid"=>$_GET['postoffid'],"owner"=>$_GET['owner'],"type"=>$_GET['type'],"identifier"=>$_GET['identifier'],"comments"=>$_GET['comments']));
+		break;
+		case 'load':
+		    header('Content-Type: application/json');
+		echo getLosts(null);
+		break;
+		case 'loadbyid':
+		    header('Content-Type: application/json');
+		echo getLosts($_GET['id']);
+		break;
+		case 'loadbypostoffice':
+		    header('Content-Type: application/json');
+		echo getLostsByPostoffices($_GET['id']);
+		break;
+		case 'search':
+		   header('Content-Type: application/json');
+		echo searchLosts($_GET['key']);
+		break;
+		case 'searchbykeys':
+		   header('Content-Type: application/json');
+		echo searchLostsByKeys($_GET['postoffid'],$_GET['key']);
+		break;
+		case'update':
+		echo updateLosts($_GET['id'],array("owner"=>$_GET['owner'],"type"=>$_GET['type'],"identifier"=>$_GET['identifier'],"comments"=>$_GET['comments']));
+		break;
+		case'found':
+		echo setFoundLosts($_GET['id']);
+		break;
+		case 'delete':
+		echo delete(array("table"=>"losts","tablecol"=>"lost_id","id"=>$_GET["id"],"reason"=>$_GET['reason']));
+		break;
+		default:	echo "Invalid Request";
+		
+}	
+}
+?>

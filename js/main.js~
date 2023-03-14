@@ -1,0 +1,236 @@
+$(document).ready(function(){
+	var zeroStatus="";
+$("#btnSavePostOffice").click(function(e){
+e.preventDefault();
+			if ($("#postName").val()!="" && $("#representativeName").val()!=""&& $("#postPhone").val()!=""
+			&& $("#postPassword").val()!=""&& $("#province").val()!="Select" && $("#district").val()!="Select"
+			&& $("#sector").val()!="Select" && $("#postCell").val()!=""){ 
+			registerPostOffices();
+		}else{
+			$("#postName").val()==""?document.getElementById("postName").style.borderColor='red':document.getElementById("postName").style.borderColor='grey';
+			$("#representativeName").val()==""?document.getElementById("representativeName").style.borderColor='red':document.getElementById("representativeName").style.borderColor='grey';
+			$("#postPhone").val()==""?document.getElementById("postPhone").style.borderColor='red':document.getElementById("postPhone").style.borderColor='grey';
+			$("#postPassword").val()==""?document.getElementById("postPassword").style.borderColor='red':document.getElementById("postPassword").style.borderColor='grey';
+			$("#province").val()=="Select"?document.getElementById("province").style.borderColor='red':document.getElementById("province").style.borderColor='grey';
+			$("#district").val()=="Select"?document.getElementById("district").style.borderColor='red':document.getElementById("district").style.borderColor='grey';
+			$("#sector").val()=="Select"?document.getElementById("sector").style.borderColor='red':document.getElementById("sector").style.borderColor='grey';
+			$("#postCell").val()==""?document.getElementById("postCell").style.borderColor='red':document.getElementById("postCell").style.borderColor='grey';
+			$("#regPostOfficeResponse").html("<font color='red'>Sorry,All Text Box and Combo Box are Required,Only Address optional</font>");
+			clearMsg("#regPostOfficeResponse");
+		}
+	});
+	
+$("#keyPostOffice").keyup(function(){
+	searchPostOffices();
+});
+$("#btnUpdPostOffice").click(function(e){
+	e.preventDefault();
+			if ($("#updpostName").val()!="" && $("#updrepresentativeName").val()!=""&& $("#updpostPhone").val()!=""
+			&& $("#updpostPassword").val()!=""&& $("#updprovince").val()!="Select" && $("#upddistrict").val()!="Select"
+			&& $("#updsector").val()!="Select" && $("#updpostCell").val()!=""){ 
+	updatePostOffices();
+}else{
+	$("#postName").val()==""?document.getElementById("postName").style.borderColor='red':document.getElementById("postName").style.borderColor='grey';
+			$("#updrepresentativeName").val()==""?document.getElementById("updrepresentativeName").style.borderColor='red':document.getElementById("postName").style.borderColor='grey';
+			$("#updpostPhone").val()==""?document.getElementById("updpostPhone").style.borderColor='red':document.getElementById("updpostPhone").style.borderColor='grey';
+			$("#updprovince").val()=="Select"?document.getElementById("updprovince").style.borderColor='red':document.getElementById("updprovince").style.borderColor='grey';
+			$("#upddistrict").val()=="Select"?document.getElementById("upddistrict").style.borderColor='red':document.getElementById("upddistrict").style.borderColor='grey';
+			$("#updsector").val()=="Select"?document.getElementById("updsector").style.borderColor='red':document.getElementById("updsector").style.borderColor='grey';
+			$("#updpostCell").val()==""?document.getElementById("updpostCell").style.borderColor='red':document.getElementById("updpostCell").style.borderColor='grey';
+			
+			$("#updPostOfficeResponse").html("<font color='red'>Sorry,Fill All Text Box and Combo Box are Required,Only Address optional</font>");
+			clearMsg("#updPostOfficeResponse");
+}	
+});
+$("#btnDelPostOffice").click(function(){
+	deletePostOffices();
+});
+$("#addNewPostOfficeMod").click(function(e){
+	e.preventDefault();
+	setComboProv("#province");
+});
+$("#btnSaveType").click(function(e){
+e.preventDefault();
+if ($("#type").val()!="") {
+registerTypes();
+}else {
+	document.getElementById("type").style.borderColor='red';
+	$("#regTypeResponse").html("<font color='red'>Lost type Name can not be empty</font>");
+clearMsg("#regTypeResponse");
+}
+});
+$("#keyType").keyup(function(){
+	searchTypes();
+});
+$("#btnUpdType").click(function(e){
+	e.preventDefault();
+if ($("#updType").val()!="") {
+		updateTypes();
+		}else {
+			document.getElementById("updType").style.borderColor='red';
+	$("#updateTypeResponse").html("<font color='red'>Lost type Name can not be empty</font>");
+	clearMsg("#updateTypeResponse");
+}
+});
+$("#btnDelType").click(function(){
+	if ($("#delReason").val()!="") {
+		deleteTypes();
+	}else {
+		document.getElementById("delReason").style.borderColor='red';
+		$("#delResponse").html("Reason Should not be empty");
+	}
+});
+//FOR Representatives
+$("#btnSaveRep").click(function(e){
+e.preventDefault();
+if ($("#repname").val()!="" && $("#repphone").val()!=""&& $("#repemail").val()!="") {
+registerRepresentative();
+}else {
+	$("#repname").val()==""?document.getElementById("repname").style.borderColor='red':document.getElementById("repname").style.borderColor='grey';
+			$("#repphone").val()==""?document.getElementById("repphone").style.borderColor='red':document.getElementById("repphone").style.borderColor='grey';
+			$("#repemail").val()==""?document.getElementById("repemail").style.borderColor='red':document.getElementById("repemail").style.borderColor='grey';
+			
+	$("#regRepResponse").html("<font color='red'>All TextBox Are Required</font>");
+clearMsg("#regRepResponse");
+}
+});
+$("#keyRep").keyup(function(){
+	searchRepresentative();
+});
+$("#btnUpdRep").click(function(e){
+	e.preventDefault();
+if ($("#updrepname").val()!="" && $("#updrepphone").val()!=""&& $("#updrepemail").val()!="") {
+		updateRepresentative();
+		}else {
+			$("#updrepname").val()==""?document.getElementById("updrepname").style.borderColor='red':document.getElementById("updrepname").style.borderColor='grey';
+			$("#updrepphone").val()==""?document.getElementById("updrepphone").style.borderColor='red':document.getElementById("updrepphone").style.borderColor='grey';
+			$("#updrepemail").val()==""?document.getElementById("updrepemail").style.borderColor='red':document.getElementById("updrepemail").style.borderColor='grey';
+	$("#updateRepResponse").html("<font color='red'>Lost type Name can not be empty</font>");
+	clearMsg("#updateRepResponse");
+}
+});
+$("#btnDelRep").click(function(){
+	if ($("#repdelReason").val()!="") {
+	deleteRepresentative();
+	}else {
+		document.getElementById("repdelReason").style.borderColor='red';
+		$("#repdelResponse").html("<font color='red'>Reason Should not be Empty</font>");
+	}
+});
+
+$("#province").change(function(){
+	setComboDist($(this),"#district")
+});
+$("#district").change(function(){
+	setComboSec($(this),"#sector")
+});
+
+$("#updprovince").change(function(){
+	setComboDist($(this),"#upddistrict");
+});
+$("#upddistrict").change(function(){
+	setComboSec($(this),"#updsector");
+});
+$("#changePwd").click(function (e) {//for super admin
+	e.preventDefault();
+	if ($("#oldpassword").val()!="" && $("#nwpassword").val()!="" && $("#confpassword").val()!="") {
+	if ($("#nwpassword").val()==$("#confpassword").val()) {
+changePwd();	
+	}else{
+		document.getElementById("doesnotmatch").style.color='red';
+		document.getElementById("doesnotmatch").innerHTML='Password doesn\'t match';
+		setTimeout(function () {
+			document.getElementById("doesnotmatch").innerHTML='';
+		},3000);
+			document.getElementById("nwpassword").style.borderColor="red";
+		document.getElementById("confpassword").style.borderColor="red";
+	}
+}else {	setTimeout(function () {
+	$("#changePwdResponse").html("<font color='red'>All PasswordBox Are Required</font>");},3000);
+		document.getElementById("oldpassword").style.borderColor="red";
+		document.getElementById("confpassword").style.borderColor="red";
+			document.getElementById("nwpassword").style.borderColor="red";
+}
+});
+$("#reqReset").click(function(){
+	requestReset();	
+		});
+$("#resetPwd").click(function (e) {//Reset Password for postoffice forgotten
+	e.preventDefault();
+	if ($("#nwresetpassword").val()==$("#confresetpassword").val()) {
+resetPwd();	
+}else{
+		document.getElementById("doesnotmatchreset").style.color='red';
+		document.getElementById("doesnotmatchreset").innerHTML='Password doesn\'t match';
+		setTimeout(function () {
+			document.getElementById("doesnotmatchreset").innerHTML='';
+		},3000);
+			document.getElementById("nwresetpassword").style.borderColor="red";
+		document.getElementById("confresetpassword").style.borderColor="red";
+	}
+});
+//ADMIN INFOS
+$("#adprof").click(function () {
+	loadAdminInfo();
+});
+$("#btnEditAdInfo").click(function (e) {
+	e.preventDefault();
+	$(this).hide();$("#viewAdInfo").hide();$("#changeAdInfo").show();$("#btnChangeAdInfo").show();
+	});
+	$("#backToView").click(function (e) {
+		e.preventDefault();
+		loadAdminInfo();
+	$("#btnEditAdInfo").show();$("#viewAdInfo").show();$("#changeAdInfo").hide();$("#btnChangeAdInfo").hide();
+	});
+	$("#btnChangeAdInfo").click(function (e) {
+		e.preventDefault();
+		if ($("#adUname").val()!="" && $("#adEmail").val()!="") {
+		updateAdminInfo();
+		}else {
+			var msg="";
+			if ($("#adUname").val()=="" && $("#adEmail").val()!="") msg="Username";
+			else if ($("#adUname").val()!="" && $("#adEmail").val()=="") msg="Email";
+			else msg="Username and Email";
+			$("#changeAdminResponse").html("<font color='red'>"+msg+" Can not be Empty</font>");
+			clearMsg("#changeAdminResponse");}
+	});
+//REPORT
+$("#checkRange").click(function (e) {
+e.preventDefault();
+loadDynamicReport();
+});
+$("#btnPrintReport").click(function (e) {
+	$("#viewby").hide();$("#repbtn").hide();$("#rangediv").hide();
+	$(document).html($("#postofficeviewform").html());
+	window.print();
+});
+$("#btnPrintPost").click(function (e) {
+	$(this).hide();$("#addNewPostOfficeMod").hide();$("#keyPostOffice").hide();$(".loadedpostmodif").hide();
+	$(document).html($("#postofficeviewform").html());
+	window.print();
+});
+$("#btnPrintType").click(function (e) {
+	$(this).hide();$("#btnAddType").hide();$("#keyType").hide();$(".loadedtypemodif").hide();
+	$(document).html($("#typeviewform").html());
+	window.print();
+});
+$("#btnPrintReps").click(function (e) {
+	$(this).hide();$("#btnAddRep").hide();$("#keyRep").hide();$(".loadedrepmodif").hide();
+	$(document).html($("#repviewform").html());
+	window.print();
+});
+function autoLoad(){
+var url=document.URL.split("/");
+	var page=url[url.length-1];
+	switch(page){
+		case'postoffice.php':loadPostOffices("setContent");loadRepresentative("setCombo",null);break;
+		case'types.php':loadTypes("setContent");break;
+		case'support.php':loadReqReset("setContent");break;
+		case'dashboard.php':fillDashboard();break;
+		case 'report.php':loadTypes("setCombo");loadPostOffices("setCombo");loadDefaultReport();break;
+		case 'representatives.php':loadRepresentative("setContent",null);break;
+	}
+
+}
+autoLoad();
+});

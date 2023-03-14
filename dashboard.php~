@@ -1,0 +1,60 @@
+<?php
+include"includes/header.php";
+?>
+<style type="text/css">
+  .home{background-color:orange;}
+</style>
+<div class="container">
+<div class="row">
+        <div class="col-lg-8">
+          <!-- Example Bar Chart Card-->
+          <div class="card mb-3">
+          <div class="card-header" style="font-size:19px;">
+              <i class="fa fa-bar-chart"></i> Bar Chart For Lost Analysis</div><br><br>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-8 my-auto">
+                  <canvas id="myBarChart" width="100" height="50"></canvas>
+                </div>
+              <div class="col-sm-4 text-center my-auto">
+                  <div class="h4 mb-0 text-primary">Total</div>
+                  <div class="small text-muted" id="totlostnum"></div>
+                  <hr>
+                  <div class="h4 mb-0 text-success" >Taken</div>
+                  <div class="small text-muted" id="takenlostnum"></div>
+                  <hr>
+                  <div class="h4 mb-0 text-danger">Remain</div>
+                  <div class="small text-muted" id="remlostnum"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /Card Columns-->
+        </div>
+        <div class="col-lg-4">
+          <!-- Example Pie Chart Card-->
+          <div class="card mb-3">
+            <div class="card-header" style="font-size:19px;">
+              <i class="fa fa-pie-chart"></i> Pie Chart For Lost Type</div>
+            <div class="card-body">
+              <canvas id="myPieChart" width="100%" height="100"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      </div>
+<?php
+include"includes/footer.php";
+?>
+</body>
+ <script src="BSHelper/vendor/jquery/jquery.min.js"></script>
+    <script src="BSHelper/vendor/popper/popper.min.js"></script>
+    <script src="BSHelper/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="BSHelper/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Page level plugin JavaScript-->
+    <script src="BSHelper/vendor/chart.js/Chart.min.js"></script>
+    <!-- Custom scripts for this page-->
+    <script src="BSHelper/js/make-charts.js"></script>
+</html>

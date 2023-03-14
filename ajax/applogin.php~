@@ -1,0 +1,5 @@
+<?php
+include"../includes/conn.php";
+include"../php/main.php";
+echo appLogin($_GET['uname'],$_GET['password']);
+?>

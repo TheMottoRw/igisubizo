@@ -1,0 +1,30 @@
+<?php
+include"../includes/conn.php";
+include"../php/main.php";
+if(isset($_GET['cate'])){
+	switch($_GET['cate']){
+		case 'register':
+		$fop=fopen("regQeueu.hd","a");
+		fwrite($fop, $_SERVER['REQUEST_URL']);
+		fclose($fop);
+		echo addQueue(array("name"=>$_GET["name"],"type"=>$_GET["type"],"identifier"=>$_GET["identifier"],"notifreceiver"=>"sms","address"=>$_GET["address"],"regdate"=>null));
+		break;
+		case 'load':
+		echo getQueue(null);
+		break;
+		case 'loadbyid':
+		echo getQueue($_GET['id']);
+		break;
+		case 'search':
+		echo searchQueue($_GET['key']);
+		break;
+		case 'update':
+		echo updateQueue($_GET['queueid'],array("name"=>$_GET["name"],"type"=>$_GET["type"],"identifier"=>$_GET["identifier"],"notifreceiver"=>"sms","address"=>$_GET["address"],"regdate"=>null));
+		break;
+		case 'delete':
+		echo delete(array("table"=>"queue","tablecol"=>"queue_id","id"=>$_GET["id"],"reason"=>$_GET['reason']));
+		break;
+		default:		echo "Invalid Request";
+}	
+}
+?>

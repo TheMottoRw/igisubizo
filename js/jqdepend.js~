@@ -1,0 +1,658 @@
+
+function ajax(url,getpars,typ,responseType,responseFunc){
+$.ajax({
+ url:url,type:typ,data:getpars,dataType:responseType,success:responseFunc,statuscode:{
+	 404:function(){
+		 alert('Response not found');
+	 }
+ }
+ });
+}
+
+
+
+function registerPostOffices(){
+	ajax("ajax/postoffices.php",{"cate":"register","name":$("#postName").val(),"representative":$("#representativeName").val(),"phone":$("#postPhone").val(),"password":$("#postPassword").val(),"provid":$("#province").val(),"district":$("#district").val(),"sector":$("#sector").val(),"cell":$("#postCell").val(),"address":$("#place").val()},"GET","text",function(res){
+		if(res=="ok"){
+			$("#postName").val("");$("#representativeName").val("");$("#postPhone").val("");$("#postPassword").val("");$("#sector").val("");$("#postCell").val("");$("#place").val("");
+		loadPostOffices("setContent");
+		$("#regPostOfficeResponse").html("<font color='green'>PostOffice Registered Success</font>");
+		}else{
+		$("#regPostOfficeResponse").html("<font color='red'>Failed to Register PostOffice</font>");
+		}
+clearMsg("#regPostOfficeResponse");
+	});
+}
+function loadPostOffices(cate){
+	ajax("ajax/postoffices.php",{"cate":"load"},"GET","json",function(res){
+if (res!=null) {	
+	switch(cate){
+			case'setContent':
+			setLoadedPostOffice(res);break;
+			case 'setCombo':
+			setLoadedComboPost(res,"#byPostoffice");
+		}
+		}
+		});
+	}
+	function setLoadedComboPost(obj,elem) {
+	var post="";
+	post+="<option>All Post Offices</option>";
+	for (var i=0;i<obj.length;i++) {
+		post+="<option value="+obj[i].postoff_id+">"+obj[i].name+"</option>";
+	}	
+	$(elem).html(post);
+	}
+	function loadLostsByPostOffice(id) {
+		ajax("ajax/losts.php",{"cate":"loadbypostoffice","id":id},"GET","json",function(res){
+			$("#postnametitl").html("");
+			$("#loadedlostsbypostoffice").html("");
+		if (res.losts!=null) {
+		setLoadedLostsByPostOffice(res);
+}else {
+		$("#postnametitl").html("Sorry No Losts Found for that Post");
+		$("#loadedlostsbypostoffice").html("");
+	}		
+		});
+	}
+	function setLoadedLostsByPostOffice(obj) {
+var postoffice="";
+		 for(var i=0;i<obj.losts.length;i++){		 
+         postoffice+="<tr>"
+             +"<th>"+ obj.losts[i].owner +"</th>"
+			  +"<th>"+ obj.losts[i].doctype +"</th>"
+			  +"<th>"+ obj.losts[i].identifier +"</th>"
+			+"<th>"+ obj.losts[i].regdate+"</th>"
+            +"</tr>";
+			}
+			$("#postnametitl").html(obj.losts[0].name);
+$("#loadedlostsbypostoffice").html("");
+			$("#loadedlostsbypostoffice").append(postoffice);
+		
+	}
+function setLoadedPostOffice(loadedpostoffice){
+ var postoffice="";
+		 for(var i=0;i<loadedpostoffice.length;i++){		
+		 var repCont="";
+		 repCont=loadedpostoffice[i].repstatus=='1'?loadedpostoffice[i].representer +"<br><font color='red'>&nbsp;&nbsp;Deleted</font>":
+		 loadedpostoffice[i].representer;
+         postoffice+="<tr>"
+             +"<th>"+ loadedpostoffice[i].name +"</th>"
+          		+"<th>"+repCont+"</th>"
+              +"<th>"+ loadedpostoffice[i].phone +"</th>"
+			  +"<th>"+ loadedpostoffice[i].province_name +"</th>"
+			  +"<th>"+ loadedpostoffice[i].district_name +"</th>"
+			 +"<th>"+ loadedpostoffice[i].sector_name +"</th>"
+			 +"<th>"+ loadedpostoffice[i].cell +"</th>"
+			 +"<th>"+ loadedpostoffice[i].address +"</th>"
+			+"<th>"+ loadedpostoffice[i].regdate+"</th>"
+              +"<th class='loadedpostmodif' style='text-align:center;'><a href='#' onclick='loadPostOfficesById(\"view\","+loadedpostoffice[i].postoff_id+")' class='btn btn-success view glyphicon' data-toggle='modal' data-target='#modalViewPostOffice' "+(loadedpostoffice[i].totlosts==0?'disabled':'')+">"+loadedpostoffice[i].totlosts+"View</a></th>"
+              +"<th class='loadedpostmodif' style='text-align:center;'><a href='#' onclick='loadPostOfficesById(\"edit\","+loadedpostoffice[i].postoff_id+")' class='btn btn-warning edit glyphicon glyphicon-pencil' data-toggle='modal' data-target='#modalUpdatePostOffice'>Edit</a></th>"
+              +"<th  class='loadedpostmodif' style='text-align:center;'><a href='#' onclick='loadPostOfficesById(\"delete\","+loadedpostoffice[i].postoff_id+")' class='btn btn-danger glyphicon glyphicon-remove' data-toggle='modal' data-target='#delModal' >Delete</a>"
+                +"</a></th>"
+            +"</tr>";
+			}
+$("#loadedPostOffice").html("");
+			$("#loadedPostOffice").append(postoffice);
+	}
+function setCombLoadedPost(loadedpostoffice){
+	var postoffice="";
+		 for(var i=0;i<loadedpostoffice.length;i++){		 
+         postoffice+="<option value='"+loadedpostoffice[i].postoff_id+"'>"+ loadedpostoffice[i].name +"</option>"
+		 }
+	
+		 $("#combPostStock").html("");
+		 $("#combPostStock").append(postoffice);
+}
+function setComboProv(elem){
+	ajax("ajax/geoloc.php",{cate:"loadprovince"},"GET","json",function(res){
+		setCombOptions(res,elem);
+});
+}
+function setComboDist(elemval,elem){
+	ajax("ajax/geoloc.php",{cate:"loaddistrictsbyprov",id:$(elemval).val()},"GET","json",function(res){
+		setCombOptions(res,elem);
+})
+}
+function setComboSec(elemval,elem){
+	ajax("ajax/geoloc.php",{cate:"loadsectorsbydist",id:$(elemval).val()},"GET","json",function(res){
+		setCombOptions(res,elem);
+});
+}
+
+function setCombOptions(loaded,elem){
+	var data="";
+		 for(var i in loaded){
+		data+="<option value='"+loaded[i]["id"]+"'>"+loaded[i]["displayer"]+"</option>"
+		 	 }
+		 $(elem).html("");
+		 $(elem).html(data);
+		 $(elem).prepend("<option selected>Select</option>");
+}
+function loadPostOfficesById(cate,id){
+	ajax("ajax/postoffices.php",{"cate":"loadbyid","id":id},"GET","json",function(res){
+	if(cate=='view'){
+		loadLostsByPostOffice(id);
+	}
+	if(cate=='edit'){
+		setEditPostOffice(res);
+		loadRepresentative("updsetCombo",res.postoffice[0].representative);
+	}
+	if(cate=='delete'){
+		setDeletePostOffice(res.postoffice);
+	}
+	});
+}
+function setEditPostOffice(data){
+	$("#postid").val(data.postoffice[0].postoff_id);
+	$("#updpostName").val(data.postoffice[0].name);
+	$("#updrepresentativeName").val(data.postoffice[0].representative);
+	loadRepresentative("setCombo",data.postoffice[0].representative);
+	$("#updpostPhone").val(data.postoffice[0].phone);
+setEditGeoLoc(data);
+	$("#updpostCell").val(data.postoffice[0].cell);
+	$("#updaddress").val(data.postoffice[0].address);
+	$("#updunitymeasure").val(data.postoffice[0].unit);
+}
+function setEditGeoLoc(data){
+	ajax("ajax/geoloc.php",{cate:"loadprovince"},"GET","json",function(res){
+	var prov="";
+	for(var i=0;i<res.length;i++){
+		if(res[i].id==data.postoffice[0].prov_id){
+	prov+="<option value='"+res[i].id+"' selected>"+res[i].displayer+"</option>";
+	}else{
+	prov+="<option value='"+res[i].id+"'>"+res[i].displayer+"</option>";
+	}
+	}
+	$("#updprovince").html(prov);
+});
+ajax("ajax/geoloc.php",{cate:"loaddistrictsbyprov",id:data.postoffice[0].prov_id},"GET","json",function(res){
+	var dist="";
+	for(var i=0;i<res.length;i++){
+		if(res[i].id==data.postoffice[0].distr_id){
+	dist+="<option value='"+res[i].id+"' selected>"+res[i].displayer+"</option>";
+	}else{
+	dist+="<option value='"+res[i].id+"'>"+res[i].displayer+"</option>";
+	}
+	}
+	$("#upddistrict").html(dist);
+});
+ajax("ajax/geoloc.php",{cate:"loadsectorsbydist",id:data.postoffice[0].distr_id},"GET","json",function(res){
+	var sec="";
+	for(var i=0;i<res.length;i++){
+		if(res[i].id==data.postoffice[0].sector){
+	sec+="<option value='"+res[i].id+"' selected>"+res[i].displayer+"</option>";
+	}else{
+	sec+="<option value='"+res[i].id+"'>"+res[i].displayer+"</option>";
+	}
+	}
+	$("#updsector").html(sec);
+});
+
+}
+
+function loadQueues(cate){
+	ajax("ajax/queue.php",{"cate":"load"},"GET","json",function(res){
+if (res!=null) {	
+	switch(cate){
+			case'setContent':
+			setLoadedQueues(res);break;
+		}
+		}
+		});
+	}
+	function searckQueues(cate){
+	ajax("ajax/queue.php",{"cate":"search","key":$("#keyQueue").val()},"GET","json",function(res){
+if (res!=null) {	
+	switch(cate){
+			case'setContent':
+			setLoadedQueues(res);break;
+		}
+		}
+		});
+	}
+	function setLoadedQueues(obj) {
+		var queue="";
+		for (var i=0;i<obj.queues.length;i++) {
+	queue+="<tr><th>"+obj.queues[i].queueowner+"</th>"
+			 +"<th>"+obj.queues[i].queue_type+"</th>"
+			 +"<th>"+obj.queues[i].queue_identifier+"</th>"
+			 +"<th>"+obj.queues[i].queue_address+"</th>"
+			 +"<th>"+obj.queues[i].queueregdate+"</th></tr>"
+			 		
+		}
+	}
+
+
+function registerRepresentative(){
+	ajax("ajax/representatives.php",{"cate":"register","name":$("#repname").val(),"phone":$("#repphone").val(),"email":$("#repemail").val()},"GET","text",function(res){
+		if(res=="ok"){
+			loadRepresentative("setContent",null);
+			$("#repname").val("");$("#repphone").val("");$("#repemail").val("");
+		$("#regRepResponse").html("<font color='green'>Representative Registered Success</font>");
+		}else{
+		$("#regRepResponse").html("<font color='red'>Failed to Register Representative</font> ");
+		}
+clearMsg("#regRepResponse");
+	});
+}
+function loadRepresentative(cate,reference){
+	ajax("ajax/representatives.php",{"cate":"load"},"GET","json",function(res){
+if(res.representative!=null){	
+switch(cate){
+	case'setContent':
+	setLoadedRepresentative(res);break;
+	case 'setCombo':
+	setComboReps(res,"#representativeName",reference);break;
+	case 'updsetCombo':
+	setComboReps(res,"#updrepresentativeName",reference);break;
+	default:
+	}			
+}else{
+	$("#loadedreps").html("");
+		}
+})
+}
+function setLoadedRepresentative(loadedrep){
+var reps="";
+
+		 for(var i=0;i<loadedrep.representative.length;i++){	
+if(loadedrep.representative[i].rep_name!=null){		 
+         reps+="<tr>"
+             +"<th>"+ loadedrep.representative[i].rep_name +"</th>"
+              +"<th>"+ loadedrep.representative[i].rep_phone+"</th>"
+               +"<th>"+ loadedrep.representative[i].rep_email+"</th>"
+                +"<th>"+ loadedrep.representative[i].regdate+"</th>"
+              +"<th class='loadedrepmodif' style='text-align:center;'><a href='#' onclick='loadRepresentativeById(\"edit\","+loadedrep.representative[i].rep_id+")' class='btn btn-warning edit glyphicon glyphicon-pencil' data-toggle='modal' data-target='#updateRepModal'>Edit</a></th>"
+              +"<th class='loadedrepmodif' style='text-align:center;'><a href='#' onclick='loadRepresentativeById(\"delete\","+loadedrep.representative[i].rep_id+")' class='btn btn-danger glyphicon glyphicon-remove' data-toggle='modal' data-target='#delModal' >Delete</a>"
+                +"</a></th>"
+            +"</tr>";
+			}
+			}
+$("#loadedreps").html("");
+			$("#loadedreps").append(reps);
+	}
+	function setComboReps(obj,elem,reference) {
+		var selreps="";
+		selreps="<option>Select Representative</option>";
+		for (var i=0;i<obj.representative.length;i++) {
+			if (elem=="#updrepresentativeName") {
+				if (obj.representative[i].rep_id==reference) {//selected current representer
+selreps+="<option value="+obj.representative[i].rep_id+" selected>"+obj.representative[i].rep_name+"</option>";
+} else if (obj.representative[i].name==null) {//for one who has doesnt represent post
+selreps+="<option value="+obj.representative[i].rep_id+">"+obj.representative[i].rep_name+"</option>";
+}
+}else{//for new post registration assign representer
+		if (elem=="#representativeName" && obj.representative[i].name==reference) {
+selreps+="<option value="+obj.representative[i].rep_id+">"+obj.representative[i].rep_name+"</option>";
+}
+}
+}//end loop
+	$(elem).html(selreps);
+}
+function loadRepresentativeById(cate,id){
+	ajax("ajax/representatives.php",{"cate":"loadbyid","id":id},"GET","json",function(res){
+	if(cate=='edit'){
+		setEditRepresentative(res);
+	}
+	if(cate=='delete'){
+		setDeleteRepresentative(res);
+	}
+	});
+}
+function setEditRepresentative(data){
+	$("#repid").val(data.representative[0].rep_id);
+	$("#updrepname").val(data.representative[0].rep_name);
+	$("#updrepphone").val(data.representative[0].rep_phone);
+	$("#updrepemail").val(data.representative[0].rep_email);
+}
+function setDeleteRepresentative(data){
+	$("#repdeleteid").val(data.representative[0].rep_id);
+	$("#repdelModalTitle").html("");
+	$("#repdelModalTitle").html("Dou want to Delete "+data.representative[0].rep_name+"?");
+}
+function searchRepresentative(){
+	ajax("ajax/representatives.php",{"cate":"search","key":$("#keyRep").val()},"GET","json",function(res){
+if(res.types!=null){
+	setLoadedRepresentative(res);
+	}else{
+		$("#loadedreps").html("");
+	}
+	});
+}
+function updateRepresentative(){
+	ajax("ajax/representatives.php",{"cate":"update","id":$("#repid").val(),"name":$("#updrepname").val(),"phone":$("#updrepphone").val(),"email":$("#updrepemail").val()},"GET","text",function(res){
+		if(res=="ok"){
+			loadRepresentative("setContent");
+			loadRepresentativeById("edit",$("#typeid").val());
+			$("#updateRepResponse").html("<font color='green'>Representer Updated Success</font>");
+		}else{
+		$("#updateRepResponse").html("<font color='red'>Failed to Update Representer</font>");
+		}
+clearMsg("#updateRepResponse");
+	});
+}
+function deleteRepresentative(){
+	ajax("ajax/representatives.php",{"cate":"delete","id":$("#repdeleteid").val(),"reason":$("#repdelReason").val()},"GET","text",function(res){				
+	//alert(res);
+	if(res=="ok"){
+		loadRepresentative("setContent");
+		$("#repdelResponse").html("<font color='green'>Representatives Removed Success</font>");
+		}else{
+		$("#repdelResponse").html("<font color='red'>Failed to Remove Representatives</font>");
+		}
+clearMsg("#repdelResponse");
+	});
+}	
+
+function setEditRepresenter(data){
+	ajax("ajax/representatives.php",{cate:"load"},"GET","json",function(res){
+	var reps="";
+	for(var i=0;i<res.length;i++){
+		if(res.representative[i].rep_id==data.postoffice[0].prov_id){
+	reps+="<option value='"+res.representative[i].rep_id+"' selected>"+res.representative[i].rep_name+"</option>";
+	}else{
+	reps+="<option value='"+res.representative[i].rep_id+"'>"+res.representative[i].rep_name+"</option>";
+	}
+	}
+	$("#updrepresentativeName").html(reps);
+});
+}
+
+function setDeletePostOffice(data){
+	$("#deletepostid").val(data[0].postoff_id);
+	$("#delModalTitle").html("Do you want to delete "+data[0].name+"?");
+}
+function searchPostOffices(){
+	ajax("ajax/postoffices.php",{"cate":"search","key":$("#keyPostOffice").val()},"GET","json",function(res){
+if (res!=null) {
+setLoadedPostOffice(res);
+}else{
+$("#loadedPostOffice").html("");
+}
+	});
+}
+function updatePostOffices(){
+ // alert("Update ID:"++"=>Name:"+$("#updpostName").val()+"=>Phone:"+$("#updpostPhone").val()+"=>Province:"+$("#updprovince").val()+"District:"+$("#upddistrict").val()+"=>Sector:"+$("#updsector").val()+"=>Cell:"+$("#updpostCell").val()+"=>Address:"+$("#updaddress").val());
+ajax("ajax/postoffices.php",{"cate":"update","id":$("#postid").val(),"name":$("#updpostName").val(),"representative":$("#updrepresentativeName").val(),"phone":$("#updpostPhone").val(),"provid":$("#updprovince").val(),"district":$("#upddistrict").val(),"sector":$("#updsector").val(),"cell":$("#updpostCell").val(),"address":$("#updaddress").val()},"GET","text",function(res){
+		if(res=="ok"){
+			loadPostOffices("setContent");
+		$("#updPostOfficeResponse").html("<font color='green'>PostOffice Updated Success</font>");
+		}else{
+		$("#updPostOfficeResponse").html("<font color='red'>Failed to Update PostOffice</font>");
+		}
+clearMsg("#updPostOfficeResponse");
+	});
+
+}
+function deletePostOffices(){
+	ajax("ajax/postoffices.php",{"cate":"delete","id":$("#deletepostid").val(),"reason":$("#delPostReason").val()},"GET","text",function(res){		
+		if(res=="ok"){
+		loadPostOffices("setContent");
+		$("#delResponse").html("<font color='green'>PostOffice Deleted Success</font>");
+		$("#delPostReason").val("");
+		}else{
+		$("#delResponse").html("<font color='red'>Failed to Delete PostOffice</font>");
+		}
+clearMsg("#delResponse");
+	});
+}
+function registerTypes(){
+	ajax("ajax/types.php",{"cate":"register","doctype":$("#type").val()},"GET","text",function(res){
+		if(res=="ok"){
+			loadTypes("setContent");
+			$("#type").val("");
+		$("#regTypeResponse").html("<font color='green'>DocType Registered Success</font>");
+		}else{
+		$("#regTypeResponse").html("<font color='red'>Failed to Register DocType</font> ");
+		}
+clearMsg("#regTypeResponse");
+	});
+}
+function loadTypes(cate){
+	ajax("ajax/types.php",{"cate":"load"},"GET","json",function(res){
+if(res.types!=null){	
+switch(cate){
+	case'setContent':
+	setLoadedTypes(res);break;
+	case 'setCombo':
+	setComboTypes(res,"#loststype");
+	default:
+	}			
+}else{
+	$("#loadedtype").html("");
+		}
+})
+}
+function setLoadedTypes(loadedtype){
+var doctyp="";
+		 for(var i=0;i<loadedtype.types.length;i++){	
+if(loadedtype.types[i].doctype!=null){		 
+         doctyp+="<tr>"
+             +"<th>"+ (i+1) +"</th>"
+             +"<th>"+ loadedtype.types[i].doctype +"</th>"
+              +"<th>"+ loadedtype.types[i].regdate+"</th>"
+              +"<th class='loadedtypemodif' style='text-align:center;'><a href='#' onclick='loadTypesById(\"edit\","+loadedtype.types[i].doc_id+")' class='btn btn-warning edit glyphicon glyphicon-pencil' data-toggle='modal' data-target='#updateTypeModal'>Edit</a></th>"
+              +"<th class='loadedtypemodif' style='text-align:center;'><a href='#' onclick='loadTypesById(\"delete\","+loadedtype.types[i].doc_id+")' class='btn btn-danger glyphicon glyphicon-remove' data-toggle='modal' data-target='#delModal' >Delete</a>"
+                +"</a></th>"
+            +"</tr>";
+			}
+			}
+$("#loadedtypes").html("");
+			$("#loadedtypes").append(doctyp);
+	}
+	function setComboTypes(obj,elem) {
+		var seltype="";
+		seltype="<option>All Types</option>";
+		for (var i=0;i<obj.types.length;i++) {
+seltype+="<option value="+obj.types[i].doc_id+">"+obj.types[i].doctype+"</option>";
+	}
+	$(elem).html(seltype);
+}
+function loadTypesById(cate,id){
+	ajax("ajax/types.php",{"cate":"loadbyid","id":id},"GET","json",function(res){
+	if(cate=='edit'){
+		setEditTypes(res);
+	}
+	if(cate=='delete'){
+		setDeleteTypes(res.types);
+	}
+	});
+}
+function setEditTypes(data){
+	$("#typeid").val(data.types[0].doc_id);
+	$("#updType").val(data.types[0].doctype);
+}
+function setDeleteTypes(data){
+	$("#deleteid").val(data[0].doc_id);
+	$("#delModalTitle").html("Do you want to delete "+data[0].doctype+"?");
+}
+function searchTypes(){
+	ajax("ajax/types.php",{"cate":"search","key":$("#keyType").val()},"GET","json",function(res){
+if(res.types!=null){
+	setLoadedTypes(res);
+	}else{
+		$("#loadedtypes").html("");
+	}
+	});
+}
+function updateTypes(){
+	ajax("ajax/types.php",{"cate":"update","id":$("#typeid").val(),"doctype":$("#updType").val()},"GET","text",function(res){
+		if(res=="ok"){
+			loadTypes("setContent");
+			loadTypesById("edit",$("#typeid").val());
+			$("#updateTypeResponse").html("<font color='green'>DocType Updated Success</font>");
+		}else{
+		$("#updateTypeResponse").html("<font color='red'>Failed to Update DocType</font>");
+		}
+clearMsg("#updateTypeResponse");
+	});
+}
+function deleteTypes(){
+	ajax("ajax/types.php",{"cate":"delete","id":$("#deleteid").val(),"reason":$("#delReason").val()},"GET","text",function(res){
+	//	alert(res);
+		if(res=="ok"){
+		loadTypes("setContent");
+		$("#delReason").val("");
+		$("#delResponse").html("<font color='green'>Item Type Removed Success</font>");
+		}else{
+		$("#delResponse").html("<font color='red'>Failed to Remove Item Type</font>");
+		}
+clearMsg("#delResponse");
+	});
+}	
+
+	function changePwd() {//for superadmin
+			ajax("ajax/users.php",{"cate":"changepwd","old":$("#oldpassword").val(),"new":$("#nwpassword").val()},"GET","text",function(res){
+		if(res=="ok"){
+		$("#changePwdResponse").html("<font color='green'>Password Changed Success <a href='includes/logout.php'>Click here to logout</a></font>");
+document.getElementById("oldpassword").style.borderColor="gray";
+		document.getElementById("confpassword").style.borderColor="gray";
+			document.getElementById("nwpassword").style.borderColor="gray";		
+		}else{
+		$("#changePwdResponse").html("<font color='red'>Failed to Change Password</font>");
+		}
+	});
+	}
+	function loadAdminInfo() {
+		ajax("ajax/users.php",{"cate":"load"},"GET","json",function(res){
+		if(res!=null){
+			setAdInfo(res);
+			}
+	});
+	}
+	function setAdInfo(obj) {
+		$("#adid").val(obj.uid);
+		$("#viewUname").html(obj.username);
+		$("#viewEmail").html(obj.email);
+		$("#adUname").val(obj.username);
+		$("#adEmail").val(obj.email);
+		}
+	function updateAdminInfo() {
+			ajax("ajax/users.php",{"cate":"update","id":$("#adid").val(),"uname":$("#adUname").val(),"email":$("#adEmail").val()},"GET","text",function(res){	
+		if(res=="ok"){
+		$("#changeAdminResponse").html("<font color='green'>Admin Information Successfull Updated</font>");
+		}else{
+			if (res=='fail') {
+		$("#changeAdminResponse").html("<font color='red'>Failed to Update Admin Information</font>");
+		}
+	}
+	clearMsg("#changeAdminResponse");
+	});
+	}
+	function requestReset() {//when password fogotten
+			ajax("ajax/postoffices.php",{"cate":"reqreset","id":$("#postoffid").val(),"phone":$("#postPhone").val(),"reason":$("#reason").val()},"GET","text",function(res){
+		if(res=="ok"){
+		$("#requestResetResponse").html("<font color='green'>Request Successfull Sent,You will be Notified when Password Resetted</font>");
+		}else{
+			if (res=='fail') {
+		$("#requestResetResponse").html("<font color='red'>Failed to Send Request for Reset Password Try Again</font>");
+		}
+		if (res=='notexist') {
+		$("#requestResetResponse").html("<font color='red'>Phone Number does not exist to Any Account</font>");
+		}
+		if (res=='allreadyonqueue') {
+		$("#requestResetResponse").html("<font color='red'>Sorry Allready waiting for Reset</font>");
+		}
+	}
+	});
+	clearMsg("#requestResetResponse")
+	}
+function loadReqReset(cate){
+	ajax("ajax/postoffices.php",{"cate":"loadreqreset"},"GET","json",function(res){
+if(res.requests!=null){	
+switch(cate){
+	case'setContent':
+	setLoadedReqReset(res);break;
+	default:
+	}			
+}else{
+	$("#loadedreqreset").html("");
+		}
+})
+}
+function setLoadedReqReset(loadedreqreset){
+var doctyp="";
+		 for(var i=0;i<loadedreqreset.requests.length;i++){	
+if(loadedreqreset.requests[i].name!=null){		 
+         doctyp+="<tr>"
+             +"<th>"+ loadedreqreset.requests[i].name +"</th>"
+              +"<th>"+ loadedreqreset.requests[i].phone +"</th>"
+               +"<th>"+ loadedreqreset.requests[i].reason +"</th>"
+              +"<th>"+ loadedreqreset.requests[i].regdate+"</th>"
+              +"<th style='text-align:center;'><a href='#' onclick='loadResetReqById(\"loadreset\","+loadedreqreset.requests[i].reset_id+")' class='btn btn-warning edit glyphicon glyphicon-pencil' data-toggle='modal' data-target='#resetPasswordModal'>Reset</a></th>"
+              +"</a></th>"
+            +"</tr>";
+			}
+			}
+$("#loadedreqreset").html("");
+			$("#loadedreqreset").append(doctyp);
+	}
+function loadResetReqById(cate,id){
+	ajax("ajax/postoffices.php",{"cate":"loadreqresetbyid","resetid":id},"GET","json",function(res){
+	if(cate=='loadreset'){
+		setResetRequest(res);
+	}
+	});
+}
+function setResetRequest(data){
+	$("#resetidreset").val(data.requests[0].reset_id);
+	$("#postoffidreset").val(data.requests[0].postoff_id);
+	$("#postname").html("Reset Password For "+data.requests[0].name);
+}	
+function fillDashboard() {
+	ajax("ajax/report.php",{"cate":"dashboard"},"GET","json",function(res){
+		if(res.whole!="null"){
+		barChart(res.whole);
+		pieChart(res.bytype);
+		}
+	});
+}
+function loadDefaultReport() {
+	ajax("ajax/report.php",{"cate":"report","start":null,"end":null,"type":"All Types","status":"Status","postoffid":"All Post Offices"},"GET","json",function(res){
+		if(res!=null){
+		setLoadedReport(res);
+		}
+	});
+}
+function loadDynamicReport() {
+	ajax("ajax/report.php",{"cate":"report","start":$("#start").val(),"end":$("#end").val(),"type":$("#loststype").val(),"status":$("#byStatus").val(),"postoffid":$("#byPostoffice").val()},"GET","json",function(res){
+		if(res!==null){
+		setLoadedReport(res);
+		}else {
+			$("#loadedreport").html("");
+		}
+	});
+}
+function setLoadedReport(obj) {
+var rep="";
+for (var i=0;i<obj.length;i++) {
+	rep+="<tr><th>"+(i+1)+"</th>"
+	+"<th>"+obj[i].owner+"</th>"
+	+"<th>"+obj[i].doctype+"</th>"
+	+"<th>"+obj[i].identifier+"</th>"
+	+"<th>"+obj[i].name+"</th>"
+	+"<th>"+obj[i].representer+"</th>"
+	+"<th>"+obj[i].status+"</th>"
+	+"<th>"+obj[i].regdate+"</th></tr>"
+}
+$("#loadedreport").html(rep);
+}
+	function resetPwd() {//Reset Password for forgotten postoffice 
+			ajax("ajax/postoffices.php",{"cate":"reset","resetid":$("#resetidreset").val(),"postoffid":$("#postoffidreset").val(),"new":$("#nwresetpassword").val()},"GET","text",function(res){
+		if(res=="ok"){
+		$("#resetPwdResponse").html("<font color='green'>Password Reset Success</font>");
+		$("#nwresetpassword").val("");$("#confresetpassword").val("");
+		}else{
+		$("#resetPwdResponse").html("<font color='red'>Failed to Reset Password</font>");
+		}
+	});
+	clearMsg("#resetPwdResponse");
+	}
+//===========OPTIONAL METHOD=======================
+//AutoClear Msg
+function clearMsg(elem){
+setTimeout(function(){
+$(elem).html("");
+},5000);
+}

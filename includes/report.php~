@@ -1,0 +1,198 @@
+<?php
+include"../conn.php";
+include"session.php";
+?>
+<html>
+<head>
+<title>Report for <?php echo $acyear;?>Academic year Allocation</title>
+<style type="text/css">
+#reporting{width:50%;height:42%;margin-top:10%;border:2px solid green;border-radius:2px;background-color:lavender;}
+
+#title-header{font-size:16px;font-weight:bold;font-family:cursive;color:darkcyan;word-spacing:2px;letter-spacing: 1px;margin-top:5px}
+#reporting-name{font-family:castellar;font-size:13px;color:black;font-weight: bold;float: left;margin-left:20px;}
+#reporting-sex{position: absolute;margin-left: 20px;}
+#reporting-aggregates{position: absolute;margin-left: 20px;}
+#sklresidence{}
+#reporting-sklatt{}
+#reporting-acskl{float: right;margin-top:-50px;margin-right:20px;}
+#reporting-acyear{margin-left:-60px;}
+#reporting-status{margin-left:-100px;}
+#parents{margin-top:30px;}
+#reporting-father{float:left;margin-left:80px;}
+#reporting-mother{float:right;margin-right: 80px;}
+#residence{margin-top:10px;}
+#reporting-district{float:left;margin-left:80px;}
+#reporting-sector{float:right;margin-right: 80px;}
+#reporting-allocationinfo{text-align: center;margin-top:50px;}
+.chap{font-family:cursive;color:black;font-weight: bold;margin-left:10px;}
+span{font-weight:normal;font-family:cursive;font-size:17px;}
+/*SKL*/
+#reporting-sklname{font-family:cursive;font-size:13px;color:black;font-weight: bold;float: left;margin-left:20px;margin-top:-110px}
+#reporting-code{position: absolute;margin-left: 20px;margin-top:-85px}
+#reporting-phone{position: absolute;margin-left: 20px;margin-top:-63px}
+#reporting-sklacskl{float: right;margin-top:-100px;margin-right:20px;}
+#reporting-sklacyear{margin-left:0px;}
+#reporting-skldistrict{float: left;margin-top:-40px;margin-left:80px;}
+#reporting-sklsector{float: right;margin-top:-40px;margin-right:80px;}
+#reporting-sklallocationinfo{margin-top:60px;}
+#allcprint{margin-top: 120px;}
+</style>
+</head>
+<body><center>
+<?php
+$acyear=$_GET['acyear'];
+if(isset($_GET['skl'])) {
+	$sklname=$_GET['skl'];}
+if(isset($_GET['cdt'])) {
+	$cdt=$_GET['cdt'];$level=$_GET['level'];
+		$excuter=mysql_query("SELECT * FROM candidates WHERE id='$cdt' AND ac_year='$acyear' AND level='$level'");
+	$cnt=mysql_num_rows($excuter);
+	if($cnt>0) {
+		while($f=mysql_fetch_assoc($excuter)) {
+			$names=$f['cdt_name'];$sex=$f['sex'];$aggregates=$f['aggregates'];$status=$f['status'];$district=$f['district'];$sector=$f['sector'];
+			$father=$f['father'];$mother=$f['mother'];$sklatt=$f['current_skl'];
+	if($level=='Advanced level') {
+			if($status=='allocated') {
+					$exc=mysql_query("SELECT * FROM allocatedal WHERE cdt_id='$cdt' AND ac_year='$acyear'");
+	$cnter=mysql_num_rows($exc);
+	if($cnter>0) {
+		
+		while($ft=mysql_fetch_assoc($exc)) {
+			$combination=$ft['combination'];
+			$sklname=$ft['sklname'];
+		}//fetch for allocated
+	}//if for rows checking
+	}//if for status
+	}//check level checked
+	elseif($level=='Ordinary level') {
+	
+			if($status=='allocated') {
+					$exc=mysql_query("SELECT * FROM allocatedol WHERE cdt_id='$cdt' AND ac_year='$acyear'");
+	$cnter=mysql_num_rows($exc);
+	if($cnter>0) {
+		while($ft=mysql_fetch_assoc($exc)) {
+			$sklname=$ft['sklname'];
+		}//fetch for allocated
+	}//if for rows checking
+	}//if for status
+	}//check level checked	
+		
+}//end fetch for cdt
+}//end rows check for cnt
+
+}elseif(isset($_GET['skl'])) {
+	$skl=$_GET['skl'];	
+$excuter=mysql_query("SELECT * FROM schools WHERE name='$skl'");
+	$cnt=mysql_num_rows($excuter);
+	if($cnt>0) {
+		while($f=mysql_fetch_assoc($excuter)) {
+			$sklname=$f['name'];$phone="0".$f['phone'];$email=$f['email'];$code=$f['code'];$sector=$f['sector'];
+			$district=$f['district'];$lvlskl=$f['levels'];
+	}//end fetch school
+	}//end rows check for the school
+}//SKL CHECKING
+?>
+<div id="reporting">
+<?php
+if(isset($_GET['cdt'])) {?>
+<p id="title-header">REPORT OF ALLOCATION FOR CANDIDATES OF <?php $acyear;?> ACADEMIC YEAR</p>
+<div id="reporting-information">
+<div id="reporting-name"><span class="chap">Names:</span><span><?php echo $names;?> </span> </div><br>
+<div id="reporting-sex"><span class="chap">Sex:</span>  <span><?php echo $sex;?></span></div><br>
+<div id="reporting-aggregates"><span class="chap">Aggregates:</span><span> <?php echo $aggregates;?> </span></div><br>
+<div id="reporting-acskl">
+<div id="reporting-sklatt"><span class="chap">School attended: </span><span> <?php echo $sklatt;?></span></div>
+<div id="reporting-acyear"><span class="chap">Academic year:</span><span><?php echo $acyear;?></span></div>
+<div id="reporting-status"><span class="chap">Status:</span><span><?php echo $status;?> </span></div>
+</div>
+<div id="parents">
+<div id="reporting-father"><span class="chap">Father:</span><span> <?php echo $father;?></span> </div>
+<div id="reporting-mother"><span class="chap">Mother:</span> <span><?php echo $mother;?></span> </div>
+</div>
+<div id="residence">
+<div id="reporting-district"><span class="chap">District:</span><span> <?php echo $district;?> </span></div>
+<div id="reporting-sector"><span class="chap">Sector: </span><span><?php echo $sector;?></span> </div>
+</div><br>
+
+<div id="reporting-allocationinfo">
+<?php
+if($status=='allocated') {
+	if($level=='Advanced level'){?>
+<span class="chap">Allocation info:</span><span>Allocated By <i><?php echo $sklname;?></i> In Option:<i><?php echo $combination;?></i> In <i><?php echo ($acyear+1);?></i> Academic Year</span>
+<?php
+}elseif($level=='Ordinary level') {?>
+ <span class="chap">Allocation info:</span><span>Allocated By <i><?php echo $sklname;?></i> In <i><?php echo ($acyear+1)."</i> Academic Year";
+ }//end o'level
+ }//end status
+ ?>
+ </span>
+</div>
+</div>
+<?php
+//}//end allocated status
+}elseif($_GET['skl']) {
+?>
+<p id="title-header">REPORT FOR THE ALLOCATION OF THE CANDIDATES OF <?php echo $acyear;?> ACADEMIC YEAR</p>
+<div id="reporting-information">
+<div id="reporting-sklname"><span id="chap">School Names:</span><span><?php echo $sklname;?></span> </div>
+<div id="reporting-code"><span id="chap">Code:</span> <span> <?php echo"0".$code;?></span></div>
+<div id="reporting-phone"><span id="chap">Phone number: </span><span> <?php echo $phone;?></span></div>
+<div id="sklresidence">
+<div id="reporting-skldistrict"><span id="chap">District: </span><span><?php echo $district;?> </span></div>
+<div id="reporting-sklsector"><span id="chap">Sector:</span> <span><?php echo $sector;?></span></div>
+</div>
+<div id="reporting-sklacskl">
+<div id="reporting-email"><span id="chap">E-mail: </span><span><?php echo $email;?></span> </div>
+<div id="reporting-sklacyear"><span id="chap">Academic year:</span><span><?php echo $acyear;?></span></div>
+</div>
+<div id="reporting-sklallocationinfo">
+<div id="allcprint">
+<?php
+//CANDIDATES FOR ADVANCED LEVEL
+
+if($lvlskl=='Advanced Level'){
+$countboysalvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='male' AND status='allocated' AND level='Advanced Level' AND id IN(SELECT cdt_id FROM allocatedal WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+$countgirlsalvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='Female' AND status='allocated' AND level='Advanced Level' AND id IN(SELECT cdt_id FROM allocatedal WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+
+}elseif($lvlskl=='Ordinary Level') {
+	$countboysolvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='male' AND status='allocated' AND level='Ordinary Level' AND id IN(SELECT cdt_id FROM allocatedol WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+$countgirlsolvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='Female' AND status='allocated' AND level='Ordinary Level' AND id IN(SELECT cdt_id FROM allocatedol WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+
+}//end o'level checkin
+elseif($lvlskl=='Both') {
+$countboysalvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='male' AND status='allocated' AND level='Advanced Level' AND id IN(SELECT cdt_id FROM allocatedal WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+$countgirlsalvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='Female' AND status='allocated' AND level='Advanced Level' AND id IN(SELECT cdt_id FROM allocatedal WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+	//CANDIDATES FOR ORDINARY LEVEL
+	$countboysolvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='male' AND status='allocated' AND level='Ordinary Level' AND id IN(SELECT cdt_id FROM allocatedol WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+$countgirlsolvl=mysql_num_rows(mysql_query("SELECT * FROM candidates WHERE ac_year='$acyear' AND sex='Female' AND status='allocated' AND level='Ordinary Level' AND id IN(SELECT cdt_id FROM allocatedol WHERE sklname='$sklname' AND ac_year='$acyear')"));	
+
+}//LEVEL CHECKING
+
+
+
+	if($lvlskl=='Advanced Level') {?>
+<span>Total number allocated by <i><?php echo $sklname;?> </i><br>In <i>Advanced Level </i>are:<i><?php echo ($countboysalvl+$countgirlsalvl);?></i>
+<br><span id="chap">Boys:</span><?php echo $countboysalvl;?>&nbsp;&nbsp;&nbsp;&nbsp;<span id="chap"><?php echo"Girls:</span><span>".$countgirlsalvl;?>
+<?php
+}elseif($lvlskl=='Ordinary Level') { ?>
+<span>Total number allocated by<i> <?php echo $sklname;?> </i>In <i>Ordinary Level </i>are:<b><?php echo ($countboysaolvl+$countgirlsolvl);?></b>
+<br><span id="chap">Boys:</span><span><?php echo $countboysolvl;?>&nbsp;&nbsp;&nbsp;&nbsp;</span><span id="chap"><?php echo"Girls:</span><span>".$countgirlsolvl;
+}elseif($lvlskl=='Both') {?>
+<span id="chap">TOTAL NUMBER OF STUDENT ALLOCATED</span><br>
+ <span id="chap"> Advanced Level are:</span> <span><?php echo ($countboysalvl+$countgirlsalvl);?></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span id="chap">Boys:</span><?php echo $countboysalvl;?>&nbsp;&nbsp;&nbsp;&nbsp;<span id="chap"><?php echo"Girls:</span><span>".$countgirlsalvl;?>
+</span><br>
+<span id="chap">Ordinary Level are:</span><span><?php echo ($countboysolvl+$countgirlsolvl);?></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span id="chap">Boys:</span><span><?php echo $countboysolvl;?>&nbsp;&nbsp;&nbsp;&nbsp;</span><span id="chap"><?php echo"Girls:</span><span>".$countgirlsolvl;
+?></span>
+</div>
+</div>
+</div>
+<?php
+}//end level checking
+}//end skl get check
+?>
+</div>
+</center>
+</body>
+</html>

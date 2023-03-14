@@ -1,0 +1,8 @@
+<?php
+session_start();
+session_destroy();
+if(isset($_COOKIE['shopmsuid'])) {
+setcookie('sid',null,-3600,'/');
+}
+header("location:../");
+?>

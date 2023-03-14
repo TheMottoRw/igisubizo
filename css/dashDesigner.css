@@ -1,0 +1,86 @@
+	.dashDesign{
+		margin-left: 10%;
+		margin-top: -1%
+	}
+	.dashHeading{
+		width: 25%;
+		height: 100px;
+		font-family: lucida fax;
+		background-color: linear-gradient(yellow,green);
+		padding: 3px;
+		text-align: center;
+		position: absolute;
+	}
+	.dashHeader{
+		font-size: 16px;
+		border-bottom:1px solid gray;box-shadow: 1px 1px 1px gray;
+		padding:3%;
+		background:linear-gradient(rgb(30,150,220),#fff);
+	}
+	.dashBody{
+		padding:3%;
+		border-bottom: 1px solid lightgray;
+		background:radial-gradient(rgba(80,150,170,0.1),white);
+	}
+	.dashFooter{
+		padding: 3%;
+		border-bottom: 2px;
+		box-shadow: 2px 5px 10px lightgray;
+		background:linear-gradient(#fff,rgb(30,150,220));
+	}
+	.dashHeading1{
+		width: 25%;
+		height: 100px;
+		font-family: lucida fax;
+		background-color: linear-gradient(yellow,green);
+		padding: 3px;
+		text-align: center;
+		border-bottom-left-radius: 20%;
+		border-top-left-radius:20%;
+		position: absolute;
+		margin-left: 27%;
+	}
+	.dashHeader1{
+		font-size: 16px;
+		border-bottom:1px solid gray;box-shadow: 1px 1px 1px gray;
+		padding:3%;
+		background:linear-gradient(rgba(160,126,130,0.7),#fff);
+	}
+	.dashBody1{
+		padding:3%;
+		border-bottom: 1px solid lightgray;
+		background:radial-gradient(rgba(80,150,170,0.1),white);
+	}
+	.dashFooter1{
+		padding: 3%;
+		border-bottom: 2px;
+		box-shadow: 2px 5px 10px lightgray;
+		background:linear-gradient(#fff,rgba(160,126,130,0.7));
+	}
+	.dashHeading2{
+		width: 25%;
+		height: 100px;
+		font-family: lucida fax;
+		padding: 3px;
+		text-align: center;
+		border-bottom-left-radius: 20%;
+		border-top-left-radius:20%;
+		margin-left: 60%;
+	}
+	.dashHeader2{
+		font-size: 16px;
+		border-bottom:1px solid gray;box-shadow: 1px 1px 1px gray;
+		padding:3%;
+		background:linear-gradient(rgb(120,182,150),#fff);
+	}
+	.dashBody2{
+		padding:3%;
+		border-bottom: 1px solid lightgray;
+		background:radial-gradient(rgba(80,150,170,0.1),white);
+	}
+	.dashFooter2{
+		padding: 3%;
+		border-bottom: 2px;
+		box-shadow: 2px 5px 10px lightgray;
+		background:linear-gradient(#fff,rgb(120,182,150));
+	}

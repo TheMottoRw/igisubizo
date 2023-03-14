@@ -1,0 +1,6 @@
+body{overflow:auto;overflow-x: auto;}
+thead tr{background: lavenderblush}
+     tbody tr:nth-child(odd){background: fixed;}
+    tbody tr:nth-child(even){background: aliceblue;}
+      tbody th{font-weight: normal;}
+      caption{color: lightslategrey;font-weight: normal;font-size: 16px;font-family: "Lucida Bright"}
